@@ -5,6 +5,17 @@ var mongoose = require('mongoose')
   , utils = require('../../lib/utils');
   //, _ = require('underscore');
 
+// used for any :id param
+exports.load = function(req, res, next, id) {
+  Record.load(id, function(err, record) {
+    if (err) return next(err);
+    if (!record) return next(new Error('not found'));
+
+    req.record = record;
+    next();
+  });
+};
+
 /**
  * List
  */
@@ -20,6 +31,7 @@ exports.index = function(req, res) {
   Record.list(options, function(err, records) {
     if(err) return res.render('500');
     Record.count().exec(function(err, count) {
+      console.log('## count: '+count);
       res.render('records/index', { //views
         title: 'All Records',
         records: records,
@@ -29,3 +41,41 @@ exports.index = function(req, res) {
     });
   });
 }
+
+// READ
+exports.view = function (req, res) {
+  console.log(req.record);
+  res.render('records/view', {
+    title: 'View Record',
+    record: req.record //from .load
+  });
+};
+
+// CREATE
+exports.new = function(req, res) {
+  res.render('records/new', {
+    title: 'New Record',
+    record: new Record({})
+  });
+};
+
+exports.create = function (req, res) {
+  console.log('### create');
+  console.log(req.body);
+  var record = new Record(req.body);
+
+  record.save(function (err) {
+    if (!err) {
+      req.flash('success', 'Made a record, son');
+      return res.redirect('/');
+    }
+    
+    //otherwise some problem => go back to form
+    res.render('records/new', { //view
+      title: 'New Record',
+      record: record,
+      errors: utils.errors(err.errors || err)
+    });
+  });
+};
+

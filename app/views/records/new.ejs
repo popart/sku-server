@@ -1,0 +1,8 @@
+<h1> <%= title %> </h1>
+
+<form name="input" action="/records" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value=<%= csrf_token %>>
+  setName: <input type="text" name="setName"></br>
+  <input type="submit" value="Submit">
+
+</form>

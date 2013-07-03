@@ -1,1 +1,11 @@
-<h1>wuttup</h1>
+<h1><%= title %></h1>
+
+<ul>
+<% for(var i=0; i<records.length; i++) { %>
+  <li><%=records[i].hable()%></li>
+  <li>id: <%=records[i]._id%></li>
+  <li><a href="/records/<%=records[i]._id%>">View</a></li>
+<% } %>
+</ul>
+
+

@@ -30,6 +30,15 @@ module.exports = function (app) {
 
   // home route
   app.get('/', records.index);
+
+  //record routes
+  app.get('/records', records.index);
+  // CREATE
+  app.get('/records/new', records.new);
+  app.post('/records', records.create);
+  // READ
+  app.get('/records/:id', records.view);
+  app.param('id', records.load);
  
   /*
   //user routes
@@ -44,11 +53,6 @@ module.exports = function (app) {
       }), users.session);
 
   app.param('userId', users.user);
-
-  //article routes
-  app.get('/articles', articles.index);
-
-  app.param('id', articles.load);
 
   // tag routes
   var tags = require('../app/controllers/tags');

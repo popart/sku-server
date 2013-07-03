@@ -6,14 +6,19 @@ var recordSchema = new Schema({
 });
 
 recordSchema.methods.hable = function() {
-  var greeting = this.name
-    ? "Ya este es record: " + this.name 
+  var greeting = this.setName
+    ? "Ya este es record: " + this.setName 
     : "No tengo un nombre";
   return greeting;
 }
 
 recordSchema.statics = {
-  list: function (options, callback) {
+  load: function(id, callback) {
+    this.findOne({_id: id})
+      .exec(callback);
+  },
+
+  list: function(options, callback) {
     this.find()
       .exec(callback);
   }
