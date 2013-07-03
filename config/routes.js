@@ -39,6 +39,11 @@ module.exports = function (app) {
   // READ
   app.get('/records/:id', records.view);
   app.param('id', records.load);
+  // UPDATE
+  app.get('/records/:id/edit', records.edit);
+  app.put('/records/:id', records.update);
+  // DESTROY
+  app.del('/records/:id', records.delete);
  
   /*
   //user routes

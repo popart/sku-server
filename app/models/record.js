@@ -5,11 +5,18 @@ var recordSchema = new Schema({
   setName: {type: String, default: ''}
 });
 
-recordSchema.methods.hable = function() {
-  var greeting = this.setName
-    ? "Ya este es record: " + this.setName 
-    : "No tengo un nombre";
-  return greeting;
+recordSchema.methods = {
+  hable: function() {
+    var greeting = this.setName
+      ? "Ya este es record: " + this.setName 
+      : "No tengo un nombre";
+    return greeting;
+  },
+  /*
+  save: function(callback) {
+    self.save(callback);
+  }
+  */
 }
 
 recordSchema.statics = {

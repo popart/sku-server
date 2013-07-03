@@ -2,8 +2,8 @@
 
 var mongoose = require('mongoose')
   , Record = mongoose.model('Record')
-  , utils = require('../../lib/utils');
-  //, _ = require('underscore');
+  , utils = require('../../lib/utils')
+  , _ = require('underscore');
 
 // used for any :id param
 exports.load = function(req, res, next, id) {
@@ -16,10 +16,7 @@ exports.load = function(req, res, next, id) {
   });
 };
 
-/**
- * List
- */
-
+// LIST
 exports.index = function(req, res) {
   var page = (req.param('page') > 0 ? req.param('page') : 1) -1;
   var perPage = 30;
@@ -41,15 +38,6 @@ exports.index = function(req, res) {
     });
   });
 }
-
-// READ
-exports.view = function (req, res) {
-  console.log(req.record);
-  res.render('records/view', {
-    title: 'View Record',
-    record: req.record //from .load
-  });
-};
 
 // CREATE
 exports.new = function(req, res) {
@@ -76,6 +64,48 @@ exports.create = function (req, res) {
       record: record,
       errors: utils.errors(err.errors || err)
     });
+  });
+};
+
+// READ
+exports.view = function(req, res) {
+  console.log(req.record);
+  res.render('records/view', {
+    title: 'View Record',
+    record: req.record //from .load
+  });
+};
+
+// UPDATE
+exports.edit = function(req, res) {
+  res.render('records/edit', {
+    title: 'Edit Record',
+    record: req.record
+  })
+};
+exports.update = function(req, res) {
+  console.log("#### update");
+  var record = req.record;
+  record = _.extend(record, req.body);
+  record.save(function(err) {
+    if (!err) {
+      return res.redirect('/records/' + record._id);
+    }
+    res.render('records/edit', {
+      title: 'Edit Record',
+      record: record,
+      errors: err.errors
+    });
+  });
+};
+
+// DESTROY
+exports.delete = function(req, res) {
+  console.log("#### DELETE");
+  var record = req.record;
+  record.remove(function(err) {
+    req.flash('info', 'Deleted succesfully');
+    res.redirect('/records');
   });
 };
 

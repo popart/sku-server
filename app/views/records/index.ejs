@@ -5,6 +5,14 @@
   <li><%=records[i].hable()%></li>
   <li>id: <%=records[i]._id%></li>
   <li><a href="/records/<%=records[i]._id%>">View</a></li>
+  <li>
+    <form action="/records/<%=records[i]._id%>" method="POST">
+      <input type="hidden" name="_csrf" value=<%= csrf_token %>>
+      <input type="hidden" name="_method" value="DELETE">
+      <button type="submit">Delete</button>
+    </form>
+  </li>
+
 <% } %>
 </ul>
 
