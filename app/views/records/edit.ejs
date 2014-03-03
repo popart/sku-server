@@ -1,9 +1,0 @@
-<h1> <%= title %> </h1>
-
-<form name="input" action="/records/<%=record._id%>" method="POST" enctype="multipart/form-data">
-  <input type="hidden" name="_csrf" value=<%= csrf_token %>>
-  <!-- express methodOverride -->
-  <input type="hidden" name="_method" value="PUT"> 
-  setName: <input type="text" name="setName" value=<%=record.setName%>></br>
-  <input type="submit" value="Submit">
-</form>
