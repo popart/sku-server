@@ -85,27 +85,15 @@ main = scotty 3000 $ do
 
     post "/readbody" $ do
         b <- body
-        --d <- jsonData
-        --json d 
-        --text $ decodeUtf8 b
-        json $ decodeUtf8 b
+        text $ decodeUtf8 b
 
-    post "/readbodyJSON" $ do
+    post "/shoe/create" $ do
         b <- body
-        text $ description $ fromJust (Aeson.decode b :: Maybe Shoe)
+        case (Aeson.decode b :: Maybe Shoe) of
+          Just s ->  text $ description $ s
+          --todo, set fail status, JSON response
+          Nothing -> json (decodeUtf8 "bad parse")
 
     get "/reqHeader" $ do
         agent <- reqHeader "User-Agent"
         maybe (raise "User-Agent header not found!") text agent
-
-{- If you don't want to use Warp as your webserver,
-   you can use any WAI handler.
-
-import Network.Wai.Handler.FastCGI (run)
-
-main = do
-    myApp <- scottyApp $ do
-        get "/" $ text "hello world"
-
-    run myApp
--}
