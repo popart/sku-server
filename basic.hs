@@ -15,7 +15,7 @@ import Data.Text.Lazy.Encoding (decodeUtf8)
 
 import qualified Data.Aeson as Aeson
 import Data.Maybe
-import Shoe
+import Style
 
 main :: IO ()
 main = scotty 3000 $ do
@@ -87,9 +87,9 @@ main = scotty 3000 $ do
         b <- body
         text $ decodeUtf8 b
 
-    post "/shoe/create" $ do
+    post "/style/create" $ do
         b <- body
-        case (Aeson.decode b :: Maybe Shoe) of
+        case (Aeson.decode b :: Maybe Style) of
           Just s ->  text $ description $ s
           --todo, set fail status, JSON response
           Nothing -> json (decodeUtf8 "bad parse")

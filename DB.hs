@@ -13,7 +13,7 @@ conn = connect defaultConnectInfo  {
   connectDatabase = "demo"
 }
 
-data Shoe = Shoe {
+data Style = Style {
   did          :: Maybe Int  ,
   description :: Maybe Text ,
   color       :: Maybe Text ,
@@ -21,26 +21,26 @@ data Shoe = Shoe {
   photo       :: Maybe Text
 } deriving (Show)
 
-instance FromRow Shoe where
-  fromRow = Shoe <$> field <*> field <*> field <*> field <*> field
+instance FromRow Style where
+  fromRow = Style <$> field <*> field <*> field <*> field <*> field
 
-instance ToRow Shoe where
-  toRow (Shoe Nothing d c s p) = [toField d, toField c, toField s, toField p]
-  toRow (Shoe did d c s p) = [toField did, toField d, toField c, toField s, toField p]
+instance ToRow Style where
+  toRow (Style Nothing d c s p) = [toField d, toField c, toField s, toField p]
+  toRow (Style did d c s p) = [toField did, toField d, toField c, toField s, toField p]
 
-createShoe :: Connection -> Shoe -> IO Int64
-createShoe c s = 
+createStyle :: Connection -> Style -> IO Int64
+createStyle c s = 
   execute c
-  "INSERT INTO shoes (description, color, size, photo) \
+  "INSERT INTO styles (description, color, size, photo) \
   \ values (?, ?, ?, ?)"
   s 
 
 test = do
   c <- conn
-  print shoe
-  createShoe c shoe
-  where shoe = Shoe {did= Nothing,
-                     description = Just "shoe1",
+  print style
+  createStyle c style
+  where style = Style {did= Nothing,
+                     description = Just "style1",
                      color = Just "blue",
                      size = Just "SIZE",
                      photo = Just "photo" }
