@@ -7,8 +7,9 @@ import Database.PostgreSQL.Simple.FromRow
 import Database.PostgreSQL.Simple.ToRow
 import Data.Int
 import Data.Text.Lazy
-import Control.Applicative
 import Data.Aeson
+import Control.Applicative
+import Control.Monad
 
 conn = connect defaultConnectInfo  {
   connectDatabase = "demo"
@@ -31,6 +32,16 @@ instance ToJSON Style where
            , "color"       .= color
            , "size"        .= size
            , "photo"       .= photo ]
+
+instance FromJSON Style where
+  parseJSON (Object v) =
+    Style <$> 
+        v .:  "did"         <*>
+        v .:  "description" <*> 
+        v .:  "color"       <*> 
+        v .:  "size"        <*> 
+        v .:? "photo"  
+  parseJSON _ = mzero
              
 getStyles :: Connection -> IO [Style]
 getStyles c = 
@@ -41,6 +52,12 @@ test = do {
     styles <- getStyles c;
     return $ toJSON $ Prelude.head $Prelude.tail styles
 }
+
+jsonTestStr = "{\"did\":123, \"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}"
+test2 = decode "{\"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}" :: Maybe Style
+
+test3 = decode jsonTestStr :: Maybe Object
+test4 = decode jsonTestStr :: Maybe Style
 {-
 instance ToRow Style where
   toRow (Style Nothing d c s p) = [toField d, toField c, toField s, toField p]
