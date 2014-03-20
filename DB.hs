@@ -15,7 +15,7 @@ conn = connect defaultConnectInfo  {
   connectDatabase = "demo"
 }
 
-data Style = Style { did         :: Int
+data Style = Style { did         :: Maybe Int
                    , description :: Text
                    , color       :: Text 
                    , size        :: Text
@@ -24,6 +24,10 @@ data Style = Style { did         :: Int
 
 instance FromRow Style where
   fromRow = Style <$> field <*> field <*> field <*> field <*> field
+
+instance ToRow Style where
+  toRow (Style did d c s p) = 
+    [toField d, toField c, toField s, toField p]
 
 instance ToJSON Style where
   toJSON (Style did description color size photo) =
@@ -36,7 +40,7 @@ instance ToJSON Style where
 instance FromJSON Style where
   parseJSON (Object v) =
     Style <$> 
-        v .:  "did"         <*>
+        v .:?  "did"         <*>
         v .:  "description" <*> 
         v .:  "color"       <*> 
         v .:  "size"        <*> 
@@ -58,24 +62,42 @@ test2 = decode "{\"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\",
 
 test3 = decode jsonTestStr :: Maybe Object
 test4 = decode jsonTestStr :: Maybe Style
-{-
-instance ToRow Style where
-  toRow (Style Nothing d c s p) = [toField d, toField c, toField s, toField p]
-  toRow (Style did d c s p) = [toField did, toField d, toField c, toField s, toField p]
 
-createStyle :: Connection -> Style -> IO Int64
-createStyle c s = 
-  execute c
-  "INSERT INTO styles (description, color, size, photo) \
-  \ values (?, ?, ?, ?)"
-  s 
-test = do
-  c <- conn
-  print style
-  createStyle c style
-  where style = Style {did= Nothing,
-                     description = Just "style1",
-                     color = Just "blue",
-                     size = Just "SIZE",
-                     photo = Just "photo" }
--}
+toRowTest (Just style) = toRow style
+test5 = toRowTest test4
+test6 = toRowTest test2
+
+addStyle :: Connection -> Style -> IO Int64
+addStyle c style
+    | did style == Nothing =
+          execute c
+          "INSERT INTO style (description, color, size, photo) \
+          \ values (?, ?, ?, ?)"
+          (toRow style)
+    -- todo: this should be an update
+    | otherwise =
+          execute c
+          "UPDATE style SET (description, color, size, photo) \
+          \ = (?, ?, ?, ?) WHERE did = ?"
+          ((toRow style) ++ [toField (5 :: Int)])
+
+wongStyle = Style { did = Nothing
+                   , description = "999th Style"
+                   , color = "RED"
+                   , size = "infinite"
+                   , photo = Just "(:[])" }
+doIt = do 
+    c <- conn
+    addStyle c testStyle1 
+    addStyle c testStyle2 
+  where
+    testStyle1 = Style { did = Just 999
+                             , description = "999th Style"
+                             , color = "RED"
+                             , size = "infinite"
+                             , photo = Just "(:[])" }
+    testStyle2 = Style { did = Nothing
+                       , description = "999th Style"
+                       , color = "RED"
+                       , size = "infinite"
+                       , photo = Just "(:[])" }
