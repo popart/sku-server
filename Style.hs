@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module DB where
+module Style where
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
@@ -15,10 +15,14 @@ conn = connect defaultConnectInfo  {
   connectDatabase = "demo"
 }
 
+data IdResult = IdResult { val :: Int } deriving (Show)
+instance FromRow IdResult where
+    fromRow = IdResult <$> field
+
 data Style = Style { did         :: Maybe Int
-                   , description :: Text
-                   , color       :: Text 
-                   , size        :: Text
+                   , description :: Maybe Text
+                   , color       :: Maybe Text 
+                   , size        :: Maybe Text
                    , photo       :: Maybe Text
 } deriving (Show)
 
@@ -40,10 +44,10 @@ instance ToJSON Style where
 instance FromJSON Style where
   parseJSON (Object v) =
     Style <$> 
-        v .:?  "did"         <*>
-        v .:  "description" <*> 
-        v .:  "color"       <*> 
-        v .:  "size"        <*> 
+        v .:? "did"         <*>
+        v .:? "description" <*> 
+        v .:? "color"       <*> 
+        v .:? "size"        <*> 
         v .:? "photo"  
   parseJSON _ = mzero
              
@@ -67,24 +71,23 @@ toRowTest (Just style) = toRow style
 test5 = toRowTest test4
 test6 = toRowTest test2
 
-addStyle :: Connection -> Style -> IO Int64
+addStyle :: Connection -> Style -> IO [IdResult]
 addStyle c style
     | did style == Nothing =
-          execute c
+          query c
           "INSERT INTO style (description, color, size, photo) \
-          \ values (?, ?, ?, ?)"
-          (toRow style)
-    -- todo: this should be an update
+          \ values (?, ?, ?, ?) returning did"
+          style
     | otherwise =
-          execute c
+          query c
           "UPDATE style SET (description, color, size, photo) \
-          \ = (?, ?, ?, ?) WHERE did = ?"
-          ((toRow style) ++ [toField (5 :: Int)])
+          \ = (?, ?, ?, ?) WHERE did = ? returning did"
+          ((toRow style) ++ [toField (did style)])
 
 wongStyle = Style { did = Nothing
-                   , description = "999th Style"
-                   , color = "RED"
-                   , size = "infinite"
+                   , description = Just "999th Style"
+                   , color = Just "RED"
+                   , size = Just "infinite"
                    , photo = Just "(:[])" }
 doIt = do 
     c <- conn
@@ -92,12 +95,14 @@ doIt = do
     addStyle c testStyle2 
   where
     testStyle1 = Style { did = Just 999
-                             , description = "999th Style"
-                             , color = "RED"
-                             , size = "infinite"
+                             , description = Just "999th Style"
+                             , color = Just "RED"
+                             , size = Just "infinite"
                              , photo = Just "(:[])" }
     testStyle2 = Style { did = Nothing
-                       , description = "999th Style"
-                       , color = "RED"
-                       , size = "infinite"
+                       , description = Just "999th Style"
+                       , color = Just "RED"
+                       , size = Just "infinite"
                        , photo = Just "(:[])" }
+
+
