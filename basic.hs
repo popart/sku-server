@@ -17,8 +17,17 @@ import qualified Data.Aeson as Aeson
 import Data.Maybe
 import Style
 
+import Database.PostgreSQL.Simple
+
+conn_0 = connect defaultConnectInfo  {
+  connectDatabase = "demo"
+}
+
+
 main :: IO ()
-main = scotty 3000 $ do
+main = do
+  c' <- conn_0
+  scotty 3000 $ do
     -- Add any WAI middleware, they are run top-down.
     middleware logStdoutDev
 
@@ -90,8 +99,7 @@ main = scotty 3000 $ do
     post "/style/create" $ do
         b <- body
         case (Aeson.decode b :: Maybe Style) of
-          Just s ->  text $ description $ s
-          --todo, set fail status, JSON response
+          Just s -> liftIO (addStyle c' s) >>= \s -> json s
           Nothing -> json (decodeUtf8 "bad parse")
 
     get "/reqHeader" $ do

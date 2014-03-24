@@ -18,6 +18,9 @@ conn = connect defaultConnectInfo  {
 data IdResult = IdResult { val :: Int } deriving (Show)
 instance FromRow IdResult where
     fromRow = IdResult <$> field
+instance ToJSON IdResult where
+  toJSON (IdResult val) =
+    object [ "val"         .= val ]
 
 data Style = Style { did         :: Maybe Int
                    , description :: Maybe Text
@@ -55,11 +58,10 @@ getStyles :: Connection -> IO [Style]
 getStyles c = 
   query_ c "SELECT did, description, color, size, photo FROM style"
 
-test = do {
-    c <- conn;
-    styles <- getStyles c;
-    return $ toJSON $ Prelude.head $Prelude.tail styles
-}
+test = do 
+    c <- conn
+    ss <- getStyles c
+    return (encode ss)
 
 jsonTestStr = "{\"did\":123, \"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}"
 test2 = decode "{\"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}" :: Maybe Style
@@ -92,7 +94,7 @@ wongStyle = Style { did = Nothing
 doIt = do 
     c <- conn
     addStyle c testStyle1 
-    addStyle c testStyle2 
+    addStyle c testStyle2
   where
     testStyle1 = Style { did = Just 999
                              , description = Just "999th Style"
