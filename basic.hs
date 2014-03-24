@@ -99,7 +99,8 @@ main = do
     post "/style/create" $ do
         b <- body
         case (Aeson.decode b :: Maybe Style) of
-          Just s -> liftIO (addStyle c' s) >>= \s -> json s
+          --Just s -> liftIO (addStyle c' s) >>= \s -> json s
+          Just s -> liftIO (addStyle c' s) >>= json
           Nothing -> json (decodeUtf8 "bad parse")
 
     get "/reqHeader" $ do
