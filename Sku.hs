@@ -15,12 +15,6 @@ conn = connect defaultConnectInfo  {
   connectDatabase = "demo"
 }
 
-data IdResult = IdResult { val :: Int } deriving (Show)
-instance FromRow IdResult where
-    fromRow = IdResult <$> field
-instance ToJSON IdResult where
-  toJSON (IdResult val) = object [ "val" .= val ]
-
 data Sku = Sku { did         :: Maybe Int
                , description :: Maybe Text
                , color       :: Maybe Text 
@@ -56,6 +50,10 @@ getSkus :: Connection -> IO [Sku]
 getSkus c = 
   query_ c "SELECT did, description, color, size, photo FROM sku"
 
+queryFail :: Connection -> IO [Only Int]
+queryFail c =
+  query_ c "select did from sku limit 1"
+
 test = do 
     c <- conn
     ss <- getSkus c
@@ -71,38 +69,33 @@ toRowTest (Just sku) = toRow sku
 test5 = toRowTest test4
 test6 = toRowTest test2
 
-addSku :: Connection -> Sku -> IO [IdResult]
+addSku :: Connection -> Sku -> IO [Sku]
 addSku c sku
-    | did sku == Nothing =
-          query c
+  | did sku == Nothing =
+    query c
           "INSERT INTO sku (description, color, size, photo) \
-          \ values (?, ?, ?, ?) returning did"
+          \ values (?, ?, ?, ?) returning *"
           sku
-    | otherwise =
-          query c
+  | otherwise =
+    query c
           "UPDATE sku SET (description, color, size, photo) \
-          \ = (?, ?, ?, ?) WHERE did = ? returning did"
+          \ = (?, ?, ?, ?) WHERE did = ? returning *"
           ((toRow sku) ++ [toField (did sku)])
 
-wongSku = Sku { did = Nothing
+doIt = do 
+  c <- conn
+  addSku c testSku1 
+  addSku c testSku2
+  where
+    testSku1 = Sku { did = Just 999
                    , description = Just "999th Sku"
                    , color = Just "RED"
                    , size = Just "infinite"
                    , photo = Just "(:[])" }
-doIt = do 
-    c <- conn
-    addSku c testSku1 
-    addSku c testSku2
-  where
-    testSku1 = Sku { did = Just 999
-                             , description = Just "999th Sku"
-                             , color = Just "RED"
-                             , size = Just "infinite"
-                             , photo = Just "(:[])" }
     testSku2 = Sku { did = Nothing
-                       , description = Just "999th Sku"
-                       , color = Just "RED"
-                       , size = Just "infinite"
-                       , photo = Just "(:[])" }
+                   , description = Just "999th Sku"
+                   , color = Just "RED"
+                   , size = Just "infinite"
+                   , photo = Just "(:[])" }
 
 

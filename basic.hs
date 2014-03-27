@@ -99,9 +99,11 @@ main = do
     post "/sku/create" $ do
         b <- body
         case (Aeson.decode b :: Maybe Sku) of
-          --Just s -> liftIO (addSku c' s) >>= \s -> json s
           Just s -> liftIO (addSku c' s) >>= json
           Nothing -> json (decodeUtf8 "bad parse")
+
+    get "/sku/" $ do
+        liftIO (getSkus c') >>= json
 
     get "/reqHeader" $ do
         agent <- reqHeader "User-Agent"
