@@ -8,7 +8,7 @@ curl -i -X POST \
        \"size\": \"sizeA\",
        \"photo\": \"jpgA\"
       }" \
-  http://localhost:3000/style/create
+  http://localhost:3000/sku/create
 
 printf "\n\nDoes it except bad JSON?\n"
 # missing comma
@@ -18,6 +18,6 @@ curl -i -X POST \
        \"size\": \"sizeA\",
        \"photo\": \"jpgA\"
       }" \
-  http://localhost:3000/style/create
+  http://localhost:3000/sku/create
 
 printf "\n\n"

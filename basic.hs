@@ -15,7 +15,7 @@ import Data.Text.Lazy.Encoding (decodeUtf8)
 
 import qualified Data.Aeson as Aeson
 import Data.Maybe
-import Style
+import Sku
 
 import Database.PostgreSQL.Simple
 
@@ -96,11 +96,11 @@ main = do
         b <- body
         text $ decodeUtf8 b
 
-    post "/style/create" $ do
+    post "/sku/create" $ do
         b <- body
-        case (Aeson.decode b :: Maybe Style) of
-          --Just s -> liftIO (addStyle c' s) >>= \s -> json s
-          Just s -> liftIO (addStyle c' s) >>= json
+        case (Aeson.decode b :: Maybe Sku) of
+          --Just s -> liftIO (addSku c' s) >>= \s -> json s
+          Just s -> liftIO (addSku c' s) >>= json
           Nothing -> json (decodeUtf8 "bad parse")
 
     get "/reqHeader" $ do

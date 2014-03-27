@@ -2,8 +2,9 @@ DROP DATABASE IF EXISTS demo;
 CREATE DATABASE demo;
 \c demo
 
-CREATE TABLE shoes (
-  id SERIAL PRIMARY KEY,
+DROP TABLE IF EXISTS sku;
+CREATE TABLE sku (
+  did SERIAL PRIMARY KEY,
   description varchar,
   size varchar,
   color varchar,
