@@ -13,12 +13,52 @@
     <script src="js/resources/sku.js"></script>
 </head>
 <body ng-controller="SkuCtrl">
-    <span>wut: {{sku_uno.description}}</span>
 
-    <div ng-repeat="sku in skus">
-        {{sku.did}} {{sku.description}}
+    <div class='scroll-list left'>
+        <div ng-repeat="sku in skus">
+            <span ng-click="select(sku.did)" class="click">
+                {{sku.description}} 
+            </span>
+        </div>
     </div>
-    
+    <div class="left">
+        <table>
+
+        <tr><td>Description:</td><td>{{selected.description}}</td></tr>
+        <tr><td>Size:</td><td>{{selected.size}}</td></tr>
+        <tr><td>Color:</td><td>{{selected.color}}</td></tr>
+        <tr><td>Photo:</td><td>
+            <img src="{{selected.photo}}">
+            </td></tr>
+
+        </table>
+    </div>
+
+    <div class="clear"></div>
+    <div>
+        <input type='file' id='photo-upload' name='photo-upload'>
+    </div>
 
 </body>
+
+<script type='text/javascript'>
+    var f = new FileReader()
+    var res = null
+    f.onload = function(e) {
+        res = e.target.result
+        console.log(res)
+    }
+    function handleFileSelect(e) {
+        var file = e.target.files[0]
+        if(file && file.type.match(/^image/)) {
+            console.log(file.type)
+            f.readAsDataURL(file)
+        } else {
+            e.target.value = null
+        }
+    }
+    document.getElementById('photo-upload')
+            .addEventListener('change', handleFileSelect, false)
+
+</script>
 </html>
