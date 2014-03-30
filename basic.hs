@@ -96,14 +96,21 @@ main = do
         b <- body
         text $ decodeUtf8 b
 
-    post "/sku/create" $ do
+    put "/sku/" $ do
         b <- body
         case (Aeson.decode b :: Maybe Sku) of
           Just s -> liftIO (addSku c' s) >>= json
           Nothing -> json (decodeUtf8 "bad parse")
+        setHeader "Access-Control-Allow-Origin" "*" 
 
+    get "/sku/:did" $ do
+        did <- param "did"
+        liftIO (getSku c' did) >>= json
+        setHeader "Access-Control-Allow-Origin" "*" 
+        
     get "/sku/" $ do
         liftIO (getSkus c') >>= json
+        setHeader "Access-Control-Allow-Origin" "*" 
 
     get "/reqHeader" $ do
         agent <- reqHeader "User-Agent"

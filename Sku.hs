@@ -50,9 +50,11 @@ getSkus :: Connection -> IO [Sku]
 getSkus c = 
   query_ c "SELECT did, description, color, size, photo FROM sku"
 
-queryFail :: Connection -> IO [Only Int]
-queryFail c =
-  query_ c "select did from sku limit 1"
+getSku :: Connection -> Int -> IO [Sku]
+getSku c did = 
+  query c 
+        "SELECT did, description, color, size, photo FROM sku where did = ?"
+        (Only did)
 
 test = do 
     c <- conn
