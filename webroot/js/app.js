@@ -2,18 +2,30 @@ var app = angular.module('app', [
       'ngResource'
     , 'app.resources.sku'
 ])
-//var app = angular.module('app', [])
 
 app.controller('SkuCtrl', ['$scope', 'Sku', function($scope, Sku) {
     $scope.skus = Sku.query()
+    $scope.sku = {}
+    $scope.edit = true
+
     $scope.select = function(did) {
-        //$scope.selected = did
-        Sku.query(
-            {'did': did}, 
-            function(response){
-                $scope.selected=response[0]
-                console.log(response[0])
-            }
-        )
+        if(did) {
+            Sku.query({'did': did}, 
+                function(response){
+                    $scope.sku=response[0]
+                    $scope.edit=false
+                }
+            )
+        } else {
+            $scope.sku = {}
+            $scope.edit = true
+        }
+    }
+
+    $scope.cancel = function() {
+        $scope.select($scope.sku.did)
+    }
+    $scope.save = function() {
+        console.log($scope.sku)
     }
 }])

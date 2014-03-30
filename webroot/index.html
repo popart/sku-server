@@ -15,29 +15,43 @@
 <body ng-controller="SkuCtrl">
 
     <div class='scroll-list left'>
+        <div>
+            <!--todo, this just runs getAll -->
+            <span ng-click="select(null)" class="click">
+                <b>New</b>
+            </span>
+        </div>
         <div ng-repeat="sku in skus">
             <span ng-click="select(sku.did)" class="click">
                 {{sku.description}} 
             </span>
         </div>
     </div>
-    <div class="left">
+    <form class="left">
         <table>
-
-        <tr><td>Description:</td><td>{{selected.description}}</td></tr>
-        <tr><td>Size:</td><td>{{selected.size}}</td></tr>
-        <tr><td>Color:</td><td>{{selected.color}}</td></tr>
+        <tr><td ng-click="edit = !edit || !sku.did">
+            <b ng-if="!!sku.did" class="click">Edit</b>
+            <b ng-if="!sku.did">Create SKU</b></td></tr>
+        <tr><td>Description:</td>
+            <td><input type="text" ng-model="sku.description"
+                    ng-disabled="!edit"/></td></tr>
+        <tr><td>Size:</td>
+            <td><input type="text" ng-model="sku.size"
+                    ng-disabled="!edit"/></td></tr>
+        <tr><td>Color:</td>
+            <td><input type="text" ng-model="sku.color"
+                    ng-disabled="!edit"/></td></tr>
         <tr><td>Photo:</td><td>
-            <img src="{{selected.photo}}">
+            <img src="{{sku.photo}}" ng-show="!edit">
+            <input type='file' id='photo-upload'
+                   name='photo-upload' ng-show="edit" />
             </td></tr>
+        <tr ng-if="edit"><td></td><td>
+            <button ng-click="save()">Save</button>
+            <button ng-click="cancel()">Cancel</button></td></tr>
 
         </table>
-    </div>
-
-    <div class="clear"></div>
-    <div>
-        <input type='file' id='photo-upload' name='photo-upload'>
-    </div>
+    </form>
 
 </body>
 
