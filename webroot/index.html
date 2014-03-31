@@ -23,7 +23,7 @@
         <div class='scroll-list'>
             <div ng-repeat="sku in skus">
                 <span ng-click="select(sku.did)" class="click">
-                    {{sku.description}} 
+                    {{sku.description || "--no description--"}} 
                 </span>
             </div>
         </div>

@@ -76,12 +76,13 @@ addSku c sku
   | did sku == Nothing =
     query c
           "INSERT INTO sku (description, color, size, photo) \
-          \ VALUES (?, ?, ?, ?) RETURNING *"
+          \ VALUES (?, ?, ?, ?) RETURNING did, description, color, size, photo"
           sku
   | otherwise =
     query c
           "UPDATE sku SET (description, color, size, photo) \
-          \ = (?, ?, ?, ?) WHERE did = ? RETURNING *"
+          \ = (?, ?, ?, ?) WHERE did = ? \
+          \ RETURNING did, description, color, size, photo"
           ((toRow sku) ++ [toField (did sku)])
 
 doIt = do 
