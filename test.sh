@@ -22,7 +22,7 @@ curl -i -X PUT \
 
 printf "\n\n"
 
-printf "\n\nTest GET\n"
-curl -X GET http://localhost:3000/sku/
+#printf "\n\nTest GET\n"
+#curl -X GET http://localhost:3000/sku/
 
-printf "\n\n"
+#printf "\n\n"
