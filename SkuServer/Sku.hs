@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Sku where
+module SkuServer.Sku where
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField

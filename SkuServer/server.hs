@@ -8,7 +8,7 @@ import Control.Monad.Trans
 
 import qualified Data.Aeson as Aeson
 import Data.Maybe
-import Sku
+import SkuServer.Sku
 
 import Database.PostgreSQL.Simple
 import Network.HTTP.Types.Method
