@@ -48,12 +48,12 @@ instance FromJSON Sku where
              
 getSkus :: Connection -> IO [Sku]
 getSkus c = 
-  query_ c "SELECT did, description, color, size, photo FROM sku"
+  query_ c "SELECT did, description, color, size, photo FROM sku ORDER BY did"
 
 getSku :: Connection -> Int -> IO [Sku]
 getSku c did = 
   query c 
-        "SELECT did, description, color, size, photo FROM sku where did = ?"
+        "SELECT did, description, color, size, photo FROM sku WHERE did = ?"
         (Only did)
 
 test = do 
@@ -76,12 +76,12 @@ addSku c sku
   | did sku == Nothing =
     query c
           "INSERT INTO sku (description, color, size, photo) \
-          \ values (?, ?, ?, ?) returning *"
+          \ VALUES (?, ?, ?, ?) RETURNING *"
           sku
   | otherwise =
     query c
           "UPDATE sku SET (description, color, size, photo) \
-          \ = (?, ?, ?, ?) WHERE did = ? returning *"
+          \ = (?, ?, ?, ?) WHERE did = ? RETURNING *"
           ((toRow sku) ++ [toField (did sku)])
 
 doIt = do 
