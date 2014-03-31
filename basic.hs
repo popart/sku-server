@@ -18,6 +18,7 @@ import Data.Maybe
 import Sku
 
 import Database.PostgreSQL.Simple
+import Network.HTTP.Types.Method
 
 conn_0 = connect defaultConnectInfo  {
   connectDatabase = "demo"
@@ -95,6 +96,11 @@ main = do
     post "/readbody" $ do
         b <- body
         text $ decodeUtf8 b
+
+    addroute OPTIONS "/sku/" $ do
+        setHeader "Access-Control-Allow-Origin" "*" 
+        setHeader "Access-Control-Allow-Headers" "Content-Type" 
+        setHeader "Access-Control-Allow-Methods" "GET, PUT, OPTIONS"
 
     put "/sku/" $ do
         b <- body

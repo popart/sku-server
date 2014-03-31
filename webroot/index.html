@@ -55,24 +55,4 @@
 
 </body>
 
-<script type='text/javascript'>
-    var f = new FileReader()
-    var res = null
-    f.onload = function(e) {
-        res = e.target.result
-        console.log(res)
-    }
-    function handleFileSelect(e) {
-        var file = e.target.files[0]
-        if(file && file.type.match(/^image/)) {
-            console.log(file.type)
-            f.readAsDataURL(file)
-        } else {
-            e.target.value = null
-        }
-    }
-    document.getElementById('photo-upload')
-            .addEventListener('change', handleFileSelect, false)
-
-</script>
 </html>

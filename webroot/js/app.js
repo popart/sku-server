@@ -3,9 +3,16 @@ var app = angular.module('app', [
     , 'app.resources.sku'
 ])
 
+app.config(function($httpProvider) {
+    $httpProvider.defaults.useXDomain = true
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    console.log($httpProvider.defaults.headers);
+})
+
 app.controller('SkuCtrl', ['$scope', 'Sku', function($scope, Sku) {
     $scope.skus = Sku.query()
-    $scope.sku = {}
+    editSku = {}
+    $scope.sku = editSku
     $scope.edit = true
 
     $scope.select = function(did) {
@@ -17,15 +24,43 @@ app.controller('SkuCtrl', ['$scope', 'Sku', function($scope, Sku) {
                 }
             )
         } else {
-            $scope.sku = {}
+            $scope.sku = editSku
             $scope.edit = true
         }
     }
 
     $scope.cancel = function() {
-        $scope.select($scope.sku.did)
+        if(!!$scope.sku.did) {
+            $scope.select($scope.sku.did)
+        } else {
+            editSku = {}
+            $scope.sku = editSku
+        }
     }
+
+    var f = new FileReader()
+    f.onload = function(e) {
+        $scope.sku.photo = e.target.result
+        save($scope.sku)
+    }
+
     $scope.save = function() {
-        console.log($scope.sku)
+        if(!encodeFile(document.getElementById("photo-upload"))) {
+            save($scope.sku)
+        }
     }
+
+    function save(sku) {
+        Sku.save({}, sku)
+    }
+
+    function encodeFile(el) {
+        var file = el.files[0]
+        if(file && file.type.match(/^image/)) {
+            f.readAsDataURL(file)
+            return true
+        }
+        return false
+    }
+
 }])
