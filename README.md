@@ -8,3 +8,5 @@ cd src
 ghc server.hs
 ./server.hs
 ```
+
+Then just load the webroot/index.html!
