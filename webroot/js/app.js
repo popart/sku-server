@@ -51,7 +51,11 @@ app.controller('SkuCtrl', ['$scope', 'Sku', function($scope, Sku) {
     }
 
     function save(sku) {
-        Sku.save({}, sku)
+        Sku.save({}, sku, function(success) {
+            $scope.sku = success[0]
+            $scope.skus = Sku.query()
+            $scope.edit = false
+        })
     }
 
     function encodeFile(el) {
