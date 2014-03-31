@@ -11,10 +11,6 @@ import Data.Aeson
 import Control.Applicative
 import Control.Monad
 
-conn = connect defaultConnectInfo  {
-  connectDatabase = "demo"
-}
-
 data Sku = Sku { did         :: Maybe Int
                , description :: Maybe Text
                , color       :: Maybe Text 
@@ -56,21 +52,6 @@ getSku c did =
         "SELECT did, description, color, size, photo FROM sku WHERE did = ?"
         (Only did)
 
-test = do 
-    c <- conn
-    ss <- getSkus c
-    return (encode ss)
-
-jsonTestStr = "{\"did\":123, \"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}"
-test2 = decode "{\"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}" :: Maybe Sku
-
-test3 = decode jsonTestStr :: Maybe Object
-test4 = decode jsonTestStr :: Maybe Sku
-
-toRowTest (Just sku) = toRow sku
-test5 = toRowTest test4
-test6 = toRowTest test2
-
 addSku :: Connection -> Sku -> IO [Sku]
 addSku c sku
   | did sku == Nothing =
@@ -85,8 +66,28 @@ addSku c sku
           \ RETURNING did, description, color, size, photo"
           ((toRow sku) ++ [toField (did sku)])
 
-doIt = do 
-  c <- conn
+-- manual tests
+testConn = connect defaultConnectInfo  {
+  connectDatabase = "demo"
+}
+
+test = do 
+    c <- testConn
+    ss <- getSkus c
+    return (encode ss)
+
+jsonTestStr = "{\"did\":123, \"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}"
+test2 = decode "{\"description\":\"andy\", \"color\":\"blue\", \"size\":\"28w\", \"photo\":\"asdfasdf\"}" :: Maybe Sku
+
+test3 = decode jsonTestStr :: Maybe Object
+test4 = decode jsonTestStr :: Maybe Sku
+
+toRowTest (Just sku) = toRow sku
+test5 = toRowTest test4
+test6 = toRowTest test2
+
+testAddSku = do 
+  c <- testConn
   addSku c testSku1 
   addSku c testSku2
   where
@@ -100,5 +101,3 @@ doIt = do
                    , color = Just "RED"
                    , size = Just "infinite"
                    , photo = Just "(:[])" }
-
-
