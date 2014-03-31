@@ -14,17 +14,18 @@
 </head>
 <body ng-controller="SkuCtrl">
 
-    <div class='scroll-list left'>
+    <div class='left'>
         <div>
-            <!--todo, this just runs getAll -->
             <span ng-click="select(null)" class="click">
                 <b>New</b>
             </span>
         </div>
-        <div ng-repeat="sku in skus">
-            <span ng-click="select(sku.did)" class="click">
-                {{sku.description}} 
-            </span>
+        <div class='scroll-list'>
+            <div ng-repeat="sku in skus">
+                <span ng-click="select(sku.did)" class="click">
+                    {{sku.description}} 
+                </span>
+            </div>
         </div>
     </div>
     <form class="left">
