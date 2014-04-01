@@ -26,11 +26,13 @@ main = do
 
     get "/" $ text "Server is up!"
 
+    -- CORS headers (called before a PUT)
     addroute OPTIONS "/sku/" $ do
         setHeader "Access-Control-Allow-Origin" "*" 
         setHeader "Access-Control-Allow-Headers" "Content-Type" 
         setHeader "Access-Control-Allow-Methods" "GET, PUT, OPTIONS"
 
+    -- create or modify sku
     put "/sku/" $ do
         b <- body
         case (Aeson.decode b :: Maybe Sku) of
@@ -38,11 +40,13 @@ main = do
           Nothing -> raise "bad parse"
         setHeader "Access-Control-Allow-Origin" "*" 
 
+    -- get sku by 'did'
     get "/sku/:did" $ do
         did <- param "did"
         liftIO (getSku c did) >>= json
         setHeader "Access-Control-Allow-Origin" "*" 
         
+    -- get all skus
     get "/sku/" $ do
         liftIO (getSkus c) >>= json
         setHeader "Access-Control-Allow-Origin" "*" 
